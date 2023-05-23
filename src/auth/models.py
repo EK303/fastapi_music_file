@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from .schemas import UserCreateSchema
 from .utils import Hasher, generate_activate_code, send_mail
+from .slugging import generate_random_slug
 
 
 Base = declarative_base()
@@ -19,14 +20,19 @@ class User(Base):
     password = Column(String)
     activation_code = Column(String)
     is_active = Column(Boolean, default=False)
+    slug = Column(String, unique=True, nullable=True)
 
 
 async def create_new_user(user: UserCreateSchema, db: Session):
+
+    slug = generate_random_slug()
+
     user = User(username=user.username,
                 email=user.email,
                 password=Hasher.hash_password(user.password),
                 activation_code=generate_activate_code(),
-                is_active=False)
+                is_active=False,
+                slug=slug)
     db.add(user)
     db.commit()
     db.refresh(user)
