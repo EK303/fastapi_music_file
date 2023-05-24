@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 from pydantic import BaseModel
 
@@ -6,3 +6,11 @@ from pydantic import BaseModel
 class AudioFileSchema(BaseModel):
 
     link: Union[str, None] = None
+
+
+class AudioFilePathSchema(BaseModel):
+
+    uuid_number: Union[str, None] = None
+    link: Union[str, None] = None
+    path: Union[str, None] = None
+

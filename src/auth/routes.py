@@ -13,6 +13,7 @@ from src.config import settings
 from .schemas import UserCreateSchema, ActivateAccountSchema, UserSchema, TokenData
 from .models import User, create_new_user, get_user_by_username
 from .authentication import oauth2_scheme, create_jwt_token, authenticate_user
+from .utils import Hasher
 
 auth_router = APIRouter()
 
@@ -57,12 +58,20 @@ async def activate_account(code: ActivateAccountSchema, db: Session = Depends(ge
                   status_code=status.HTTP_200_OK,
                   tags=["users"])
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+
+    db_user = db.query(User).filter(User.username == form_data.username).first()
+
+    if not db_user:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User with this username not found")
+
+    if not Hasher.verify_password(form_data.password, db_user.password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect password")
+
     user = authenticate_user(username=form_data.username, password=form_data.password, db=db)
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Failed to login. Possible reasons:"
-                                                                          "1: Account is not activated;"
-                                                                          "2: Incorrect email or password")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Failed to login. Account not activated."
+                                                                          "Check your email for activation code")
 
     jwt_token = create_jwt_token(user["username"])
 

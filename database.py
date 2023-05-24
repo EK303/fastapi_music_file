@@ -12,10 +12,6 @@ engine = create_engine(DB_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
-mapper_registry = registry()
-mapper_registry.configure()
-
 
 def get_db() -> Generator:
     try:

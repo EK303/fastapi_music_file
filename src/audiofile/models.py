@@ -2,11 +2,13 @@ import uuid
 
 from sqlalchemy import Column, String, Boolean, Integer, ForeignKey
 from sqlalchemy.orm import relationship, Session
-
-from database import Base, save
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import IntegrityError
 
 from src.config import settings
 from .service import Result, OperationalError
+
+Base = declarative_base()
 
 
 class AudioFile(Base):
@@ -16,7 +18,7 @@ class AudioFile(Base):
     uuid = Column(String, unique=True, nullable=False)
     link = Column(String, unique=True, nullable=True)
     path_to_file = Column(String, unique=True, nullable=False)
-    uploader_slug = Column(String, unique=True, nullable=False)
+    uploader_slug = Column(String, nullable=False)
 
 
 def create_audio_file(user, file_path, db: Session):
@@ -29,9 +31,12 @@ def create_audio_file(user, file_path, db: Session):
                          path_to_file=file_path,
                          uploader_slug=user.slug)
 
-        save(file, db)
+        db.add(file)
+        db.commit()
+        db.refresh(file)
 
-        return Result.success(status=True, file_path=download_url)
+        return Result.success(status=True, url=download_url, file_path=file_path,
+                              uuid_number=uuid_number)
 
-    except OperationalError as e:
+    except IntegrityError as e:
         return Result.fail(status=False, message=str(e))

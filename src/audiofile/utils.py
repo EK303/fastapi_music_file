@@ -8,8 +8,6 @@ from .service import Result, OperationalError
 
 def check_file_format(file):
 
-    print(file.filename.endswith('.wav'))
-
     if file.filename.endswith('.wav'):
         return Result.success(status=True)
 

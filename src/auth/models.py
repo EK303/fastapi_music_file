@@ -1,11 +1,13 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import Session
-
-from database import Base
+from sqlalchemy.ext.declarative import declarative_base
 
 from .schemas import UserCreateSchema
 from .utils import Hasher, generate_activate_code, send_mail
 from src.slugging import generate_random_slug
+
+
+Base = declarative_base()
 
 
 class User(Base):
