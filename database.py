@@ -1,8 +1,9 @@
+from typing import Generator
 from fastapi import Depends
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from typing import Generator
+from sqlalchemy.orm import sessionmaker, registry
+from sqlalchemy.ext.declarative import declarative_base
 
 from src.config import settings
 
@@ -10,6 +11,10 @@ DB_URL = settings.SQLALCHEMY_DATABASE_URL
 engine = create_engine(DB_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+mapper_registry = registry()
+mapper_registry.configure()
 
 
 def get_db() -> Generator:

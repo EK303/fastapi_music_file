@@ -20,6 +20,7 @@ class UserCreateSchema(BaseModel):
 class UserSchema(BaseModel):
     username: str
     email: str
+    slug: str
 
 
 class ActivateAccountSchema(BaseModel):

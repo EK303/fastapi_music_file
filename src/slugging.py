@@ -1,7 +1,7 @@
 import random
 import string
 
-from .service import UserService
+from src.auth.service import UserService
 
 
 def generate_random_string() -> str:

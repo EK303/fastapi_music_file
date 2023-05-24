@@ -2,6 +2,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.encoders import jsonable_encoder
+
 from sqlalchemy.orm import Session
 
 from jose import JWTError, jwt
@@ -14,11 +16,12 @@ from .authentication import oauth2_scheme, create_jwt_token, authenticate_user
 
 auth_router = APIRouter()
 
+import os
+
 
 @auth_router.post("/registration", status_code=status.HTTP_201_CREATED,
                   tags=["users"])
 async def create_user(user: UserCreateSchema, db: Session = Depends(get_db)):
-
     if db.query(User).filter_by(email=user.email).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User with this email already exists")
 
@@ -92,10 +95,9 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
 
 @auth_router.get("/profile",
                  status_code=status.HTTP_200_OK,
-                 response_model=UserSchema)
-async def profile(current_user: User = Depends(get_current_user)):
-    data = {
-        "username": current_user.username,
-        "email": current_user.email
-    }
-    return UserSchema(**data)
+                 response_model=UserSchema,
+                 tags=["users"])
+async def profile(current_user: Annotated[User, Depends(get_current_user)]):
+    user = jsonable_encoder(current_user)
+
+    return user

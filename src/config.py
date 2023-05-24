@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from decouple import config
 import string
 
@@ -22,6 +24,9 @@ class Settings:
     JWT_SECRET = config("JWT_SECRET")
     ACCESS_TOKEN_EXPIRE_MINUTES = int(config("ACCESS_TOKEN_EXPIRE_MINUTES"))
     JWT_ALGORITHM = config("JWT_ALGORITHM")
+
+    root_directory = Path.cwd()
+    files_directory = os.path.join(root_directory, 'static')
 
 
 settings = Settings()
