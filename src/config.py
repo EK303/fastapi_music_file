@@ -28,5 +28,7 @@ class Settings:
     root_directory = Path.cwd()
     files_directory = os.path.join(root_directory, 'static')
 
+    download_url = config('DOWNLOAD_URL')
+
 
 settings = Settings()

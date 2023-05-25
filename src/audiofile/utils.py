@@ -3,7 +3,7 @@ from pydub import AudioSegment
 
 from src.config import settings
 
-from .service import Result, OperationalError
+from .service import Result
 
 
 def check_file_format(file):
@@ -32,5 +32,5 @@ async def convert_save_wav_to_mp3(file):
 
         return Result.success(status=True, file_path=mp3_file_path)
 
-    except OperationalError as e:
+    except BaseException as e:
         return Result.fail(status=False, message=str(e))

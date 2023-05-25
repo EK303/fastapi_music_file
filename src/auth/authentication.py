@@ -1,13 +1,10 @@
 from datetime import datetime, timedelta
-from typing import Annotated
 
-from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from jose import JWTError, jwt
 
 from .models import get_user_by_username
-from .schemas import TokenData
 from .utils import Hasher
 from src.config import settings
 

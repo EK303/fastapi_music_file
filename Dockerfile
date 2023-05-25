@@ -9,6 +9,7 @@ ADD . /code
 
 COPY ./requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN apt-get update && apt-get install -y ffmpeg
 
 CMD ['sh', 'code/postgres_config.sh']
 COPY . /

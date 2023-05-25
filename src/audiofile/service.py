@@ -1,15 +1,12 @@
 from sqlalchemy.sql import text
-from sqlalchemy.exc import IntegrityError
 
 from database import get_db
 
 db = next(get_db())
 
 
-class OperationalError(BaseException):
-    pass
-
-
+# to keep track of statuses and descriptions of tasks performed by the application and catch
+# errors that may occur to see their nature
 class Result:
 
     def __init__(self, *args, **kwargs):
@@ -28,6 +25,8 @@ class Result:
         return cls(*args, **kwargs)
 
 
+# to avoid requests to the database, we set a class with a single instance
+# possible that will store all the necessary information we might need
 class FileService:
     paths: set = {}
     urls: set = {}
@@ -70,17 +69,16 @@ class FileService:
         self.urls.add(url)
 
     def update_url_path(self, url: str, file_path: str, uuid_number: str):
-        if file_path in self.paths:
-            pass
-        else:
+        if file_path not in self.paths:
             self.urls_path.append({"uuid_number": uuid_number, "link": url, "path": file_path})
             self.paths.add(file_path)
             self.urls.add(url)
 
     def download_file(self, uuid_number: str):
-        if uuid_number in self.uuids:
-            for file in self.urls_path:
-                if file["uuid_number"] == uuid_number:
-                    return Result.success(status=True, file_path=file["path"])
 
-        return Result.fail(status=False, message="File not found")
+        if not uuid_number in self.uuids:
+            return Result.fail(status=False, message="File not found")
+
+        for file in self.urls_path:
+            if file["uuid_number"] == uuid_number:
+                return Result.success(status=True, file_path=file["path"])

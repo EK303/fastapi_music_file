@@ -5,8 +5,9 @@ from database import get_db
 db = next(get_db())
 
 
+# to avoid requests to the database, we set a class with a single instance
+# possible that will store all the necessary information we might need
 class UserService:
-
     slugs = {}
     _instance = None
 

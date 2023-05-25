@@ -16,6 +16,7 @@ def generate_random_string() -> str:
     return result_str
 
 
+# making sure that the slug for new users is unique
 def generate_random_slug() -> str:
 
     user_service = UserService.get_instance()

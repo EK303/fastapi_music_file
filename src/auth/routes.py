@@ -17,8 +17,6 @@ from .utils import Hasher
 
 auth_router = APIRouter()
 
-import os
-
 
 @auth_router.post("/registration", status_code=status.HTTP_201_CREATED,
                   tags=["users"])
@@ -44,21 +42,20 @@ async def activate_account(code: ActivateAccountSchema, db: Session = Depends(ge
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid activation code")
 
-    if not user.is_active:
-        user.activation_code = ""
-        user.is_active = True
-        await save(user, db)
+    if user.is_active:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Account is already active")
 
-        return {"message": "Your account has been activated"}
+    user.activation_code = ""
+    user.is_active = True
+    await save(user, db)
 
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is already active")
+    return {"message": "Your account has been activated"}
 
 
 @auth_router.post("/login",
                   status_code=status.HTTP_200_OK,
                   tags=["users"])
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-
     db_user = db.query(User).filter(User.username == form_data.username).first()
 
     if not db_user:
@@ -81,7 +78,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Couldn't generate token")
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],  # errors check
                      db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -94,11 +91,15 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
+
     except JWTError:
         raise credentials_exception
+
     user = get_user_by_username(username=token_data.username, db=db)
+
     if user is None:
         raise credentials_exception
+
     return user
 
 

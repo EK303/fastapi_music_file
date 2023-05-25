@@ -42,7 +42,9 @@ async def upload_file(file: UploadFile,
     if not save_file.status:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=save_file.message)
 
-    file_service.update_url_path(save_file.url, save_file.file_path)
+    file_service.update_url_path(url=save_file.url,
+                                 file_path=save_file.file_path,
+                                 uuid_number=save_file.uuid_number)
 
     return {"link": save_file.url}
 
@@ -65,6 +67,6 @@ async def download_file(uuid_number: str):
     file = file_service.download_file(uuid_number)
 
     if not file.status:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=file.message)
 
     return FileResponse(file.file_path)

@@ -1,11 +1,9 @@
 import secrets
 from passlib.context import CryptContext
 
-from fastapi import Depends
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 
 from src.config import settings
-from database import SessionLocal, get_db
 
 
 secure_random = secrets.SystemRandom()

@@ -1,12 +1,11 @@
 import uuid
 
-from sqlalchemy import Column, String, Boolean, Integer, ForeignKey
-from sqlalchemy.orm import relationship, Session
+from sqlalchemy import Column, String, Integer
+from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import IntegrityError
 
-from src.config import settings
-from .service import Result, OperationalError
+from .service import Result
 
 Base = declarative_base()
 
@@ -24,7 +23,7 @@ class AudioFile(Base):
 def create_audio_file(user, file_path, db: Session):
     try:
         uuid_number = uuid.uuid4()
-        download_url = f"http:0.0.0.0:8000/record?id={uuid_number}&user={user.slug}"
+        download_url = f"id={uuid_number}&user={user.slug}"
 
         file = AudioFile(uuid=uuid_number,
                          link=download_url,
@@ -38,5 +37,5 @@ def create_audio_file(user, file_path, db: Session):
         return Result.success(status=True, url=download_url, file_path=file_path,
                               uuid_number=uuid_number)
 
-    except IntegrityError as e:
-        return Result.fail(status=False, message=str(e))
+    except IntegrityError:
+        return Result.fail(status=False, message="A file with this name already exists")
