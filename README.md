@@ -53,8 +53,8 @@ MAIL_USERNAME=\
 MAIL_FROM=\
 MAIL_PASSWORD=\
 MAIL_PORT=\
-MAIL_SERVER="smtp.gmail.com"
-MAIN_FROM_NAME=\
+MAIL_SERVER="smtp.gmail.com"\
+MAIN_FROM_NAME=
 
 For the #Authentication values, please refer to [here](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/).
 
