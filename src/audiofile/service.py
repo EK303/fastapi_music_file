@@ -31,6 +31,7 @@ class Result:
 class FileService:
     paths: set = {}
     urls: set = {}
+    uuids: set = {}
     urls_path: list = []
     _instance = None
 
@@ -46,9 +47,11 @@ class FileService:
             query = text("SELECT * FROM audiofile;")
             connection = db.execute(query)
             result = connection.fetchall()
-            self.paths = set([item[3] for item in result])
+            self.uuids = set([item[1] for item in result])
             self.urls = set([item[2] for item in result])
-            self.urls_path = [{"uuid_number": item[1], "link": item[2], "path": item[3]} for item in result]
+            self.paths = set([item[3] for item in result])
+            self.urls_path = [{"uuid_number": item[1], "link": item[2], "path": item[3], "uploader_slug": item[4]}
+                              for item in result]
         return self.urls_path
 
     def get_all_urls(self):
@@ -73,3 +76,11 @@ class FileService:
             self.urls_path.append({"uuid_number": uuid_number, "link": url, "path": file_path})
             self.paths.add(file_path)
             self.urls.add(url)
+
+    def download_file(self, uuid_number: str):
+        if uuid_number in self.uuids:
+            for file in self.urls_path:
+                if file["uuid_number"] == uuid_number:
+                    return Result.success(status=True, file_path=file["path"])
+
+        return Result.fail(status=False, message="File not found")

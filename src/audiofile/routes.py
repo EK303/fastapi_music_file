@@ -1,6 +1,7 @@
 from typing import Annotated, List
 
 from fastapi import UploadFile, APIRouter, Depends, status, HTTPException
+from fastapi.responses import FileResponse
 
 from sqlalchemy.orm import Session
 
@@ -26,7 +27,6 @@ file_service = FileService.get_instance()
 async def upload_file(file: UploadFile,
                       current_user: Annotated[User, Depends(get_current_user)],
                       db: Session = Depends(get_db)):
-
     check_file = check_file_format(file)
 
     if not check_file.status:
@@ -52,7 +52,19 @@ async def upload_file(file: UploadFile,
                  status_code=status.HTTP_200_OK,
                  tags=["audio"])
 async def get_list_urls():
-
     list_files = file_service.get_all_urls_path()
 
     return list_files
+
+
+@file_router.get("/download/{uuid_number}",
+                 status_code=status.HTTP_200_OK,
+                 tags=["audio"])
+async def download_file(uuid_number: str):
+
+    file = file_service.download_file(uuid_number)
+
+    if not file.status:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+
+    return FileResponse(file.file_path)
