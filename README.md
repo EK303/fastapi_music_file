@@ -47,7 +47,9 @@ For further reference we will refer to as a "rd", standing for root directory.
 In rd, create a .env (not cloned) as per .env_example. You can copy the DB_HOST and DB_ENGINE parameters from the .env_example.
 The remaining parameters you can set as you wish.
 
-For the below-mentioned parameters, you will have to configure an application in the Google App Passwords as per [here](https://bshoo.medium.com/how-to-send-emails-with-python-django-through-google-smtp-server-for-free-22ea6ea0fb8e):
+The application uses the SMTP protocol to send emails with activation code. Once you register an account, you'll receive a code with an 
+activation code that you'll have to use to activate your account. To ensure this functionality, you'll have to configure the following parameters
+with an application in the Google App Passwords as per [here](https://bshoo.medium.com/how-to-send-emails-with-python-django-through-google-smtp-server-for-free-22ea6ea0fb8e):
 
 MAIL_USERNAME=\
 MAIL_FROM=\
