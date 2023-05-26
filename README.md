@@ -1,7 +1,7 @@
 ## Audio Files
 
-The application is designed to manage upload/download of .wav formatted audio files and and to further convert them them into .mp3. 
-It's written using the FastAPI framework and requires a quick registration to upload audio files.
+The application is designed to manage upload/download of .wav formatted audio files with a subsequent conversion to .mp3. 
+It's written using the FastAPI framework and requires a quick registration with a valid email address to upload audio files.
 
 ## Installation
 

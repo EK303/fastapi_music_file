@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
@@ -12,7 +13,7 @@ from database import get_db, save
 from src.config import settings
 from .schemas import UserCreateSchema, ActivateAccountSchema, UserSchema, TokenData
 from .models import User, create_new_user, get_user_by_username
-from .authentication import oauth2_scheme, create_jwt_token, authenticate_user
+from .authentication import oauth2_scheme, create_jwt_token, authenticate_user, token_error
 from .utils import Hasher
 
 auth_router = APIRouter()
@@ -80,25 +81,28 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],  # errors check
                      db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+
     try:
         payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
         username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
+
+        if not username:
+            raise token_error("Invalid token. Try to login again")
+
+        token_exp = payload.get("exp")
+
+        if datetime.now() >= datetime.fromtimestamp(token_exp):
+            raise token_error("Token expired. Try to login again")
+
         token_data = TokenData(username=username)
 
-    except JWTError:
-        raise credentials_exception
+    except Exception as e:
+        raise token_error(str(e))
 
     user = get_user_by_username(username=token_data.username, db=db)
 
     if user is None:
-        raise credentials_exception
+        raise token_error("User not found. Try to refresh the page and login again")
 
     return user
 

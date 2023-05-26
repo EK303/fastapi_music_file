@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from fastapi import status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
 from jose import JWTError, jwt
@@ -35,5 +36,10 @@ def create_jwt_token(username: str):
     except JWTError:
         return None
 
+
+def token_error(error_message: str):
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail=error_message,
+                        headers={"WWW-Authenticate": "Bearer"})
 
 
