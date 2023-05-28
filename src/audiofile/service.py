@@ -5,7 +5,7 @@ from database import get_db
 db = next(get_db())
 
 
-# to keep track of statuses and descriptions of tasks performed by the application and catch
+# to keep track of statuses and descriptions of tasks performed by the utility functions of the application and catch
 # errors that may occur to see their nature
 class Result:
 

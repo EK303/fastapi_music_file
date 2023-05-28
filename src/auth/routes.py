@@ -79,7 +79,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Couldn't generate token")
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],  # errors check
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
                      db: Session = Depends(get_db)):
 
     try:

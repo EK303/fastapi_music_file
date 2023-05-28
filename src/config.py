@@ -25,9 +25,9 @@ class Settings:
     ACCESS_TOKEN_EXPIRE_MINUTES = int(config("ACCESS_TOKEN_EXPIRE_MINUTES"))
     JWT_ALGORITHM = config("JWT_ALGORITHM")
 
+    # file management
     root_directory = Path.cwd()
     files_directory = os.path.join(root_directory, 'static')
-
     download_url = config('DOWNLOAD_URL')
 
 
