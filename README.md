@@ -9,7 +9,7 @@ Before getting the project, make sure you've [Docker](https://docs.docker.com/en
 To set up the application, create a project directory on your computer, navigate to it and run:
 
 ```bash
-https://gitlab.com/praktikant101/fastapi_music_files.git
+git clone https://gitlab.com/praktikant101/fastapi_music_files.git
 ```
 
 Once the project is downloaded, in the root directory of the newly created folder,
